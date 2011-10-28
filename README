@@ -1,0 +1,19 @@
+bus-notify: A python script that watches nearby bus schedules
+
+Author: Xin Yin <killkeeper at gmail dot com>
+
+DESCRIPTION
+-----------
+bus-notify is still a DEMO project under development.
+
+The script will keep track of bus schedules with in proximity of user-specified
+location, and prompts notification when a bus is about to due shortly.
+
+Bus stops, stopby lines and schedules are fetched from Google Maps' transit
+data. See src/utils.py for more detail.
+
+REQUIREMENTS
+------------
+Python 2.6+
+GTK+ 3.0+
+PyGObject
