@@ -20,8 +20,13 @@ from geotile  import GlobalMercator
 from time     import sleep
 from datetime import datetime
 from math     import floor
+
+import itertools
+
 # Gtk
-import gi                                                                                                                                                  
+import gi
+
+
 gi.require_version('Gtk', '3.0')
 from gi.repository import GObject, Gtk, Notify
 

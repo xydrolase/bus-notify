@@ -113,14 +113,14 @@ class GMapMetadata:
             http://mt0.google.com/vt/ft?lyrs=...&las=...
 
         We could identify bus stop metadata by recognizing its unique (or not?)
-        bounding box [-7, -7, 6, 6]."""
+        bounding box [-6, -6, 5, 5]."""
 
         # Seems to be response w/o useful data
         if response.find('features') == -1:
             return None
 
         # Some cleaning before JSON library could start its job.
-        json_raw = re.sub(r'([{,])([a-z_]+):', r'\1"\2":', 
+        json_raw = re.sub(r'([{,])([a-z]([a-z0-9_]+)?):', r'\1"\2":', 
                 response[response.find('(') + 1:response.rfind(')')])
         json_raw = re.sub(r'\"c\":\"\{1:\{(.+?)\}\}"', r'"c":{\1}', json_raw)
         # fix for numeric property names (evil!)
@@ -135,7 +135,7 @@ class GMapMetadata:
             for node in metadata:
                 for feat in node['features']:
                     # Identify bus stop by its bounding box (might has problems?)
-                    if feat['bb'] == [-7, -7, 6, 6] and \
+                    if feat['bb'] == [-6, -6, 5, 5] and \
                             feat['id'] not in busstops:
                         busstops.setdefault(feat['id'], {})
                         busstops[feat['id']]['caption'] = feat['c']['title'] 
@@ -180,6 +180,7 @@ class GMapMetadata:
                 info = meta['infoWindow']
                 schedule = info['transitSchedules']['stationSchedules']
                 
+                bus_node['stopCode'] = schedule.get('stopCode', None)
                 bus_node['agency'] = schedule['agencies'][0]['agency_name']
         except ValueError:
             return 
@@ -251,10 +252,10 @@ class BusDOMParser(HTMLParser):
                 self.line['schedules'].append(
                         (' '.join(_match.groups()), self.flag=='timend'))
         elif self.flag == 'direction':
-            if self.tagstack[-2:] == ['tr','td']:
+            if self.tagstack[-3:] == ['tr','td', 'td'] and data.strip():
                 self.line['direction'] = data
         elif self.flag == 'line':
-            if self.tagstack[-3:] == ['td', 'div', 'div']:
+            if self.tagstack[-3:] == ['td', 'div', 'div'] and data.strip():
                 self.line['line'] = data
 
     def handle_endtag(self, tag):
